@@ -11,7 +11,7 @@ from constants import MESH, CURVE,META,CURVES,OBJECT_SEGMENTATION,SUB_SEGMENTATI
 from render_settings import set_segmentation_render_settings
 
 
-base_path = pathlib.Path(__file__).parent
+base_path = pathlib.Path(__file__).parent.parent
 
 object_color_to_string_dict = {}
 object_part_color_to_string_dict = {}
