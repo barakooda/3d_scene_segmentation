@@ -26,6 +26,7 @@ This repository contains a suite of Python scripts designed for segmenting 3D sc
 - **Color Consistency**: Utilizes a hashing mechanism to ensure consistent color assignment across different sessions.
 - **High Color Depth**: Supports 8-bit to 32-bit per channel color depth for precise color differentiation.
 - **Automated Material Application**: Automatically applies materials and shaders to segmented parts.
+- **Minimal Material Optimiztion**: The number of materials needed for segmentation is minimal and usually ends up with only two.
 
 ## Future Features
 Planned enhancements to extend functionality and improve user experience include:
