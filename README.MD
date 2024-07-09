@@ -4,7 +4,7 @@ This repository contains a suite of Python scripts designed for segmenting 3D sc
 
 ## Example Output
 <p align="center">
-  <img src="./docs/images/rgb.webp" alt="RGB Image" width="30%" />
+  <img src="./docs/images/rgb.jpg" alt="RGB Image" width="30%" />
   <img src="./docs/images/segmentation.png" alt="Segmentation Image" width="30%" />
 </p>
 
