@@ -34,7 +34,7 @@ Planned enhancements to extend functionality and improve user experience include
 - **Automatic Object Detection and Classification**: Integration of AI-based detectors to automatically identify and classify objects in 3D scenes.
 - **Support for AOV in Rendering**: Adding Arbitrary Output Variable (AOV) support to enhance rendering capabilities, allowing users to output custom render passes.
 - **Automation for Cryptomatte**: Developing automated processes for Cryptomatte in Blender for cases where the current system is limited, enhancing the ability to handle complex masking and object isolation.
-- **Refraction Support in Materials**: Adding support for realistic refraction in transparent materials such as glass, enhancing the visual realism of rendered scenes.
+- **Refraction Support in Segmentation**: Adding support for realistic refraction in transparent materials such as glass.
 
 ## Installation
 ### Prerequisites
