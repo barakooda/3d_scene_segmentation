@@ -76,7 +76,7 @@ Planned enhancements to extend functionality and improve user experience include
 - **seg_materials.py**: Manages creation and application of materials for segmentation.
 - **seg_utils.py**: Contains utility functions specifically for segmentation tasks.
 
-## Credits
+## Credits for example Blender file
 - **Blender 3.5 – Cozy Kitchen** by Nicole Morena
 
 ## Contributing
