@@ -2,6 +2,10 @@
 
 This repository contains a suite of Python scripts designed for segmenting 3D scenes using Blender's Python API. The scripts automate the process of applying semantic and sub-segmentation to 3D objects in Blender, facilitating the generation of segmented 3D models for various applications such as machine learning and visualization.
 
+## Example Output
+![RGB Image](./docs/images/rgb.webp)
+![Segmentation Image](./docs/images/segmentation.png)
+
 ## Table of Contents
 - [Features](#features)
 - [Future Features](#future-features)
