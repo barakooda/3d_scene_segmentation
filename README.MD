@@ -4,8 +4,13 @@ This repository contains a suite of Python scripts designed for segmenting 3D sc
 
 ## Example Output
 <p align="center">
-  <img src="./docs/images/rgb.jpg" alt="RGB Image" width="30%" />
-  <img src="./docs/images/segmentation.png" alt="Segmentation Image" width="30%" />
+  <img src="./docs/images/rgb_room.jpg" alt="RGB Image" width="30%" />
+  <img src="./docs/images/segmentation_room.png" alt="Segmentation Image" width="30%" />
+</p>
+
+<p align="center">
+  <img src="./docs/images/rgb_einar.jpg" alt="RGB Image" width="30%" />
+  <img src="./docs/images/segmentation_einar.png" alt="Segmentation Image" width="30%" />
 </p>
 
 ## Table of Contents
