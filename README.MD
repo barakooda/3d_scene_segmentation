@@ -2,7 +2,7 @@
 
 This repository contains a suite of Python scripts designed for segmenting 3D scenes using Blender's Python API. The scripts automate the process of applying semantic and sub-segmentation to 3D objects in Blender, facilitating the generation of segmented 3D models for various applications such as machine learning and visualization.
 
-# Longer explnation:
+# Longer explanation:
 
 The quality of deep learning models is intimately tied to the data they are trained on, with classified images being particularly crucial. By classifying each pixel directly, this project significantly enhances image understanding and precision. Each pixel is meticulously labeled with a string that defines its role, deepening our understanding of the image's content and the relationships among its elements. This detailed labeling supports both comprehensive scene semantic segmentation and more nuanced sub-segmentation at the object feature level.
 
