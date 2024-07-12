@@ -10,17 +10,17 @@ The output of this system includes a JSON file that maps colors to string descri
 
 Advantages of this system include:
 
-    Consistent color mappings that facilitate recognition and analysis across different applications.
-    Quick processing suitable for complex 3D scenes.
-    Efficient generation of outputs like semantic segmentation, sub-segmentation, and instance segmentation images.
-    Requires minimal images to describe and segment a rendered 3D scene comprehensively.
-    Works independently of specific rendering engines by integrating directly at the 3D model level.
-    Provides a simple and comprehensive solution for most segmentation needs.
+Consistent color mappings that facilitate recognition and analysis across different applications.
+Quick processing suitable for complex 3D scenes.
+Efficient generation of outputs like semantic segmentation, sub-segmentation, and instance segmentation images.
+Requires minimal images to describe and segment a rendered 3D scene comprehensively.
+Works independently of specific rendering engines by integrating directly at the 3D model level.
+Provides a simple and comprehensive solution for most segmentation needs.
 
 Disadvantages include:
 
-    Challenges with sub-pixel variations, potentially missing finer details.
-    Lack of support for blurring and other focus effects, which might limit the realism in rendered images.
+Challenges with sub-pixel variations, potentially missing finer details.
+Lack of support for blurring and other focus effects, which might limit the segmentation accuracy.
 
 For scenarios that demand precise control over gradients or object edges, Cryptomatte is recommended to generate detailed masks efficiently. This segmentation system caters to approximately 90% of the needs in 3D scene analysis, making it a powerful tool for developers working with visual data and machine learning applications.
 
