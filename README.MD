@@ -2,6 +2,29 @@
 
 This repository contains a suite of Python scripts designed for segmenting 3D scenes using Blender's Python API. The scripts automate the process of applying semantic and sub-segmentation to 3D objects in Blender, facilitating the generation of segmented 3D models for various applications such as machine learning and visualization.
 
+# Longer explnation:
+
+The quality of deep learning models is intimately tied to the data they are trained on, with classified images being particularly crucial. By classifying each pixel directly, this project significantly enhances image understanding and precision. Each pixel is meticulously labeled with a string that defines its role, deepening our understanding of the image's content and the relationships among its elements. This detailed labeling supports both comprehensive scene semantic segmentation and more nuanced sub-segmentation at the object feature level.
+
+The output of this system includes a JSON file that maps colors to string descriptors and a segmented image that adheres strictly to these mappings, ensuring consistency across applications. For example, the term "eye" consistently appears in the same color, which helps in forming a "second language" that aids developers in debugging and understanding diverse images. Moreover, this pixel-level classification approach can be seamlessly integrated with image super augmentation techniques, enhancing the robustness and versatility of the training data used for machine learning models.
+
+Advantages of this system include:
+
+    Consistent color mappings that facilitate recognition and analysis across different applications.
+    Quick processing suitable for complex 3D scenes.
+    Efficient generation of outputs like semantic segmentation, sub-segmentation, and instance segmentation images.
+    Requires minimal images to describe and segment a rendered 3D scene comprehensively.
+    Works independently of specific rendering engines by integrating directly at the 3D model level.
+    Provides a simple and comprehensive solution for most segmentation needs.
+
+Disadvantages include:
+
+    Challenges with sub-pixel variations, potentially missing finer details.
+    Lack of support for blurring and other focus effects, which might limit the realism in rendered images.
+
+For scenarios that demand precise control over gradients or object edges, Cryptomatte is recommended to generate detailed masks efficiently. This segmentation system caters to approximately 90% of the needs in 3D scene analysis, making it a powerful tool for developers working with visual data and machine learning applications.
+
+
 ## Example Output
 <p align="center">
   <img src="./docs/images/rgb_room.jpg" alt="RGB Image" width="30%" />
@@ -54,10 +77,10 @@ Planned enhancements to extend functionality and improve user experience include
     - Navigate to the directory where you cloned the repo.
 
 3. **Setup Startup Script**:
-    - Create a `startup.py` file in `C:\\blender\\4.2\\scripts\\startup`. Inside the `startup.py` file, add the following lines:
+    - Create a `startup.py` file in `C:\blender\4.2\scripts\startup`. Inside the `startup.py` file, add the following lines:
         ```python
         import sys
-        sys.path.append('C:\\\\path\\\\to\\\\your\\\\cloned\\\\repo')
+        sys.path.append('C:\path\to\your\cloned\repo')
         ```
 
 ### Configure Development Environment
