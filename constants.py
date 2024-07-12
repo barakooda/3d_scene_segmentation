@@ -21,7 +21,7 @@ UNDEFINED_OBJECT: str = "undefined_object"
 # Attribute Names
 ATTRIBUTE_NAME: str = "attribute_name"
 SUB_SEGMENTATION_ATTRIBUTE_NAME: str = "sub_segmentation"
-SUB_SEGMENTATION_PREFIX: list = ["seg", "sub", "DEF"]
+SUB_SEGMENTATION_PREFIX: list = ["seg_"]
 
 # Maximum Values
 MAX_UINT16: int = 2**16 - 1

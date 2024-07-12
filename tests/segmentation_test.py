@@ -16,7 +16,7 @@ base_path = pathlib.Path(__file__).parent.parent
 object_color_to_string_dict = {}
 object_part_color_to_string_dict = {}
 
-IN_FILE_PATH = base_path / "input" / "blender-3.5-splash.blend"
+IN_FILE_PATH = base_path / "input" / "einar_release_v1.blend"
 OUT_FILE_PATH = base_path / "output" / "segmented_scene.blend"
 object_color_json_file = base_path / "output" / "object_color_to_string_dict.json"
 object_parts_color_json_file = base_path / "output" / "object_parts_color_to_string_dict.json"
