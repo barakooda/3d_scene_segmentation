@@ -78,9 +78,26 @@ Planned enhancements to extend functionality and improve user experience include
 
 3. **Setup Startup Script**:
     - Create a `startup.py` file in `C:\blender\4.2\scripts\startup`. Inside the `startup.py` file, add the following lines:
-        ```python
+      ```
         import sys
-        sys.path.append('C:\path\to\your\cloned\repo')
+        
+        repo_path ="repo path " 
+        
+        def register():
+            # Add the repository path to sys.path when Blender starts
+            if repo_path not in sys.path:
+                sys.path.append(repo_path)
+                print(f"Added {repo_path} to Python path")
+        
+        def unregister():
+            # This function can remain empty if you have nothing to unregister
+            # Optionally, you could remove the repo path from sys.path when Blender exits
+            if repo_path in sys.path:
+                sys.path.remove(repo_path)
+                print(f"Removed {repo_path} from Python path")
+        
+        if __name__ == "__main__":
+            register()
         ```
 
 ### Configure Development Environment
