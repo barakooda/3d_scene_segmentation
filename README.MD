@@ -78,8 +78,9 @@ Planned enhancements to extend functionality and improve user experience include
 
 3. **Setup Startup Script**:
     - Create a `startup.py` file in `C:\blender\4.2\scripts\startup`. Inside the `startup.py` file, add the following lines:
-      ```import sys
-
+      ```
+        import sys
+        
         repo_path ="repo path " 
         
         def register():
