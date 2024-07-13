@@ -14,6 +14,7 @@ def set_segmentation_render_settings(scene_name: str = "Scene"):
         return
 
     scene.render.engine = 'CYCLES'
+    scene.cycles.device = 'CPU'
     scene.cycles.preview_samples = 1
     scene.cycles.samples = 1
     scene.cycles.use_denoising = False
