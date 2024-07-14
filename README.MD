@@ -113,8 +113,9 @@ Planned enhancements to extend functionality and improve user experience include
 ### Run the Scripts
 - Run the test script using blender exe file with python flag:
 - (it will look something like that) 
+```
 - c:\blender\blender.exe --python D:\temp\scene_segmentation\tests\segmentation_test.py
-
+```
 ## Scripts Overview
 - **constants.py**: Defines constants used across the segmentation processes.
 - **logger_config.py**: Configures logging for tracking the script operations.
