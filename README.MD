@@ -130,6 +130,10 @@ c:\blender\blender.exe --python D:\temp\scene_segmentation\tests\segmentation_te
 
 ## Credits for example Blender file
 - **Blender 3.5 – Cozy Kitchen** by Nicole Morena
+- **Blender Studio 
+- **Christophe Seux
+
+
 
 ## Contributing
 Contributions to improve the functionality or efficiency of the segmentation processes are welcome. To contribute:
