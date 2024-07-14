@@ -111,7 +111,9 @@ Planned enhancements to extend functionality and improve user experience include
     - Configure Visual Studio Code to use the Python interpreter that comes with Blender, usually located in your Blender directory.
 
 ### Run the Scripts
-- Open Blender, and in a Python console or via the scripting tab, you can run the scripts from the repository by importing them or using Blender’s text editor to open and run the `.py` files.
+- Run the test script using blender exe file with python flag:
+- (it will look something like that) 
+- c:\blender\blender.exe --python D:\temp\scene_segmentation\tests\segmentation_test.py
 
 ## Scripts Overview
 - **constants.py**: Defines constants used across the segmentation processes.
