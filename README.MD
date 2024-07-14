@@ -6,7 +6,7 @@ This repository contains a suite of Python scripts designed for segmenting 3D sc
 
 The quality of deep learning models is intimately tied to the data they are trained on, with classified images being particularly crucial. By classifying each pixel directly, this project significantly enhances image understanding and precision. Each pixel is meticulously labeled with a string that defines its role, deepening our understanding of the image's content and the relationships among its elements. This detailed labeling supports both comprehensive scene semantic segmentation and more nuanced sub-segmentation at the object feature level.
 
-The output of this system includes a JSON file that maps colors to string descriptors and a segmented image that adheres strictly to these mappings, ensuring consistency across applications. For example, the term "eye" consistently appears in the same color, which helps in forming a "second language" that aids developers in debugging and understanding diverse images. Moreover, this pixel-level classification approach can be seamlessly integrated with image super augmentation techniques, enhancing the robustness and versatility of the training data used for machine learning models.
+The output of this system includes a JSON file that maps colors to string descriptors and a segmented blender scene that adheres strictly to these mappings, ensuring consistency across applications. For example, the term "eye" consistently appears in the same color, which helps in forming a "second language" that aids developers in debugging and understanding diverse images. Moreover, this pixel-level classification approach can be seamlessly integrated with image super augmentation techniques, enhancing the robustness and versatility of the training data used for machine learning models.
 
 Advantages of this system include:
 
@@ -52,7 +52,7 @@ For scenarios that demand precise control over gradients or object edges, Crypto
 - **Semantic Segmentation**: Assigns unique colors to different objects in a 3D scene based on their type or other attributes.
 - **Sub-Segmentation**: Applies detailed segmentation within individual objects based on predefined vertex group prefixes.
 - **Color Consistency**: Utilizes a hashing mechanism to ensure consistent color assignment across different sessions.
-- **High Color Depth**: Supports 8-bit to 32-bit per channel color depth for precise color differentiation.
+- **High Color Depth**: Supports 8-bit to 32-bit per channel color depth for segmentation space control.
 - **Automated Material Application**: Automatically applies materials and shaders to segmented parts.
 - **Material Usage Optimiztion**: The number of materials needed for segmentation is minimal and usually ends up with only two.
 
