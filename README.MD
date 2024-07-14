@@ -112,6 +112,9 @@ Planned enhancements to extend functionality and improve user experience include
 
 ### Run the Scripts
 - Run the test script using blender exe file with python flag:
+```
+<path-to-blender-executable> --python <path-to-script>
+```
 - (it will look something like that) 
 ```
 c:\blender\blender.exe --python D:\temp\scene_segmentation\tests\segmentation_test.py
