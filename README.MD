@@ -111,7 +111,7 @@ Planned enhancements to extend functionality and improve user experience include
     - Configure Visual Studio Code to use the Python interpreter that comes with Blender, usually located in your Blender directory.
 
 ### Run the Scripts
-- Run the test script using blender exe file with python flag:
+- Run the test script using blender executable with python flag:
 ```
 <path-to-blender-executable> --python <path-to-script>
 ```
