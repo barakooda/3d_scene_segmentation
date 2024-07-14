@@ -114,7 +114,7 @@ Planned enhancements to extend functionality and improve user experience include
 - Run the test script using blender exe file with python flag:
 - (it will look something like that) 
 ```
-- c:\blender\blender.exe --python D:\temp\scene_segmentation\tests\segmentation_test.py
+c:\blender\blender.exe --python D:\temp\scene_segmentation\tests\segmentation_test.py
 ```
 ## Scripts Overview
 - **constants.py**: Defines constants used across the segmentation processes.
