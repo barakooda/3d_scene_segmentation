@@ -1,6 +1,11 @@
 import bpy
 from constants import BB_MIN, BB_MAX, CENTER
 
+from logger_config import setup_logger
+
+# Set up logging
+logger = setup_logger(__name__)
+
 def get_context_window():
     for window in bpy.context.window_manager.windows:
         if window:
@@ -30,9 +35,22 @@ def create_shader_node(
 
 
 def add_material_to_object(obj: bpy.types.Object, material: bpy.types.Material):
+
+    logger.info(f"Adding material {material.name} to object {obj.name}")
+
     if obj.material_slots:
         for slot in obj.material_slots:
-            slot.material = material
+            if slot.material is None:
+                obj.data.materials.append(material)
+                continue
+           
+            if slot.is_property_readonly('material'):
+                obj.data.materials.clear()
+                obj.data.materials.append(material)
+                
+            else:
+                
+                slot.material = material
 
     else:
         obj.data.materials.append(material)
