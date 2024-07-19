@@ -7,7 +7,7 @@ from seg_utils import convert_all_curve_particle_instances_to_mesh
 from seg_utils import set_sub_segmentation,set_object_segmentation,set_particle_system_segmentation
 
 from seg_materials import create_segmentation_material
-from constants import MESH, CURVE,META,CURVES,OBJECT_SEGMENTATION,SUB_SEGMENTATION,GEOMETRY,SEMANTIC_NAME,SUB_SEGMENTATION_PREFIX
+from constants import MESH, CURVE,META,CURVES,OBJECT_SEGMENTATION,SUB_SEGMENTATION,GEOMETRY,SEMANTIC_NAME,SUB_SEGMENTATION_PREFIX,MAX_UINT16
 from render_settings import set_segmentation_render_settings
 
 
@@ -39,13 +39,14 @@ sub_segmentation_material = create_segmentation_material( name = SUB_SEGMENTATIO
 
 for obj in objects_for_segmentation:
         
-    color = set_object_segmentation(obj = obj,object_segmentation_material = object_segmentation_material)
-    object_color_to_string_dict[str(tuple(color))] = obj.name
+    color_for_saving = set_object_segmentation(obj = obj,object_segmentation_material = object_segmentation_material)
+    object_color_to_string_dict[color_for_saving] = obj.name
 
     sub_segmentation_dict = set_sub_segmentation(obj = obj,prefix_list=SUB_SEGMENTATION_PREFIX,sub_segmentation_material=sub_segmentation_material)
     object_part_color_to_string_dict.update(sub_segmentation_dict)
 
-    set_particle_system_segmentation(obj = obj,segmentation_custom_property=SEMANTIC_NAME)
+    particles_color_to_string_dict = set_particle_system_segmentation(obj = obj,segmentation_custom_property=SEMANTIC_NAME)
+    object_color_to_string_dict.update(particles_color_to_string_dict)
 
 current_scene = bpy.context.scene
 set_segmentation_render_settings(scene_name=current_scene.name)

@@ -1,7 +1,7 @@
 from collections import defaultdict
 import bpy
 import bmesh
-from utils import add_material_to_object,filter_by_startwith_names,is_point_in_bounding_box
+from utils import add_material_to_object,filter_by_startwith_names,is_point_in_bounding_box,remove_prefix_from_string
 import hashlib
 from constants import SEMANTIC_NAME,UNDEFINED_OBJECT,MAX_UINT16,OBJECT_SEGMENTATION,ATTRIBUTE_NAME
 from constants import INDICES, BB_MIN, BB_MAX,SUB_SEGMENTATION_ATTRIBUTE_NAME, SUB_SEGMENTATION
@@ -127,7 +127,7 @@ def get_color_from_split_bytes_list(key_list: list, alpha: int = MAX_UINT16) -> 
 
 
 
-def set_object_segmentation(obj:bpy.types.Object = None,semantic_name:str = UNDEFINED_OBJECT,object_segmentation:str =  OBJECT_SEGMENTATION, object_segmentation_material:bpy.types.Material = None) ->list:
+def set_object_segmentation(obj:bpy.types.Object = None,semantic_name:str = UNDEFINED_OBJECT,object_segmentation:str =  OBJECT_SEGMENTATION, object_segmentation_material:bpy.types.Material = None) ->dict:
     
 
     if not obj:
@@ -148,7 +148,8 @@ def set_object_segmentation(obj:bpy.types.Object = None,semantic_name:str = UNDE
     if object_segmentation_material:
         add_material_to_object(obj, object_segmentation_material)
     
-    return color
+    color = str(tuple(int(c * MAX_UINT16) for c in color))
+    return color 
 
 
 def is_contain_vertex_groups(obj: bpy.types.Object, vertex_group_filter: str = None) -> bool:
@@ -165,9 +166,12 @@ def is_contain_vertex_groups(obj: bpy.types.Object, vertex_group_filter: str = N
         return len(obj.vertex_groups) > 0
 
 def set_sub_segmentation(obj:bpy.types.Object = None,prefix_list:list = None,sub_segmentation:str =  SUB_SEGMENTATION, sub_segmentation_material:bpy.types.Material = None) -> dict:
-    string_per_color_dict = {}
-    
+    color_to_string_dict = {}
+
     if is_contain_vertex_groups(obj):
+
+        
+
         color_per_string_dict = create_colors_by_groups_names(obj,prefix_list=prefix_list)
         
         if not color_per_string_dict:
@@ -178,9 +182,16 @@ def set_sub_segmentation(obj:bpy.types.Object = None,prefix_list:list = None,sub
             pass
             add_material_to_object(obj, sub_segmentation_material)
 
-        string_per_color_dict = {str(tuple(value)): key for key, value in color_per_string_dict.items()}
-
-    return string_per_color_dict
+        if (color_per_string_dict):
+            #logger.info(f"color_per_string_dict: {color_per_string_dict}")
+            
+            for key, value in color_per_string_dict.items():
+                
+                value = str(tuple([int(element*MAX_UINT16) for element in value]))
+                key = remove_prefix_from_string(key,prefix_list)
+                color_to_string_dict[value] = key
+            
+    return color_to_string_dict
 
 def create_colors_by_groups_names(
     obj: bpy.types.Object,
@@ -201,7 +212,8 @@ def create_colors_by_groups_names(
     for group in groups:
 
         group_name = group.name
-        colors_by_groups_names_segmentation_dic[group_name] = string_to_rgba_color(group_name, color_bit_depth=color_bit_depth)
+        group_name_with_no_prefix = remove_prefix_from_string(group_name,prefix_list)
+        colors_by_groups_names_segmentation_dic[group_name] = string_to_rgba_color(group_name_with_no_prefix, color_bit_depth=color_bit_depth)
     
     return colors_by_groups_names_segmentation_dic
 
@@ -348,17 +360,28 @@ def add_color_attribute_to_face_corner_of_vertex_group(
 
 
 
-def set_particle_system_segmentation(obj :bpy.types.Object = None,segmentation_custom_property:str = None)->None:
+def set_particle_system_segmentation(obj :bpy.types.Object = None,segmentation_custom_property:str = None)->dict:
+
+    color_to_string_dict = {}
     
     if (segmentation_custom_property):
         particle_systems = [particle_system for particle_system in obj.particle_systems if segmentation_custom_property in particle_system.settings]
     
     if not particle_systems:
-        return
+        return color_to_string_dict
 
     for particle_system in particle_systems:
-        color = string_to_rgba_color(particle_system.settings[segmentation_custom_property]) 
+
+        particle_system_segmentation_property = particle_system.settings[segmentation_custom_property]
+
+        color = string_to_rgba_color(particle_system_segmentation_property) 
         material = create_hair_particle_system_material(particle_system=particle_system,color= color)
+
 
         obj.data.materials.append(material)
         particle_system.settings.material = len(obj.data.materials)
+
+        color = str(tuple(int(c * MAX_UINT16) for c in color))
+        color_to_string_dict[color] = particle_system_segmentation_property
+    
+    return color_to_string_dict

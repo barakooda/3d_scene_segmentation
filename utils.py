@@ -34,6 +34,16 @@ def create_shader_node(
     return shader_node
 
 
+def remove_prefix_from_string(group_name:str ,prefix_list:list) -> str:
+    if prefix_list is None:
+        return group_name
+    
+    for prefix in prefix_list:
+        if group_name.startswith(prefix):
+            group_name = group_name[len(prefix):]
+            break
+    return group_name
+
 def add_material_to_object(obj: bpy.types.Object, material: bpy.types.Material):
 
     logger.info(f"Adding material {material.name} to object {obj.name}")
