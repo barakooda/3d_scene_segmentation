@@ -3,12 +3,10 @@ import json
 
 import bpy
 
-from seg_utils import convert_all_curve_particle_instances_to_mesh
-from seg_utils import set_sub_segmentation,set_object_segmentation,set_particle_system_segmentation
-
-from seg_materials import create_segmentation_material
-from constants import MESH, CURVE,META,CURVES,OBJECT_SEGMENTATION,SUB_SEGMENTATION,GEOMETRY,SEMANTIC_NAME,SUB_SEGMENTATION_PREFIX,MAX_UINT16
-from render_settings import set_segmentation_render_settings
+from src.seg_utils import convert_all_curve_particle_instances_to_mesh,set_sub_segmentation,set_object_segmentation,set_particle_system_segmentation
+from src.seg_materials import create_segmentation_material
+from src.constants import MESH, CURVE,META,CURVES,OBJECT_SEGMENTATION,SUB_SEGMENTATION,GEOMETRY,SEMANTIC_NAME,SUB_SEGMENTATION_PREFIX
+from src.render_settings import set_segmentation_render_settings
 
 
 base_path = pathlib.Path(__file__).parent.parent

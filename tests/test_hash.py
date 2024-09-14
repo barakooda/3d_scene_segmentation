@@ -1,4 +1,5 @@
-import seg_utils
+import src.seg_utils as seg_utils
+
 name = "barak1sdfsdfsdfsdf!@@$$%&sdfsdfsdfsdfsdfsdfsdf"
 
 color = seg_utils.string_to_rgba_color(name,normalize=False)
