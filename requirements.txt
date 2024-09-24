@@ -1,0 +1,7 @@
+bpy
+torch
+numpy
+opencv-python
+Pillow
+nltk
+open_clip_torch
