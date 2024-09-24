@@ -7,17 +7,17 @@ import os
 import time
 from PIL import Image
 
-from nltk.corpus import wordnet
+import nltk
 import torch
 import open_clip
 from ai_models.data.seed_words import seed_words
 from src.constants import AI_MODEL,BASE_PATH
-
+from src.utils import hide_all_except_one_globally
 
 
 def delete_camera_and_bouding_box()-> None:
     for obj in bpy.data.objects:
-        if obj.name.startswith(("object_bb","detection_camera")):
+        if obj.name.startswith(("detection_camera")) or obj.name.endswith(("_bbox_temp")):
             bpy.data.objects.remove(obj)
 
 
@@ -79,8 +79,8 @@ def create_bbox_and_cameras(obj: bpy.types.Object)-> list[bpy.types.Object, list
     mat_world = obj.matrix_world
     world_corners = [mat_world @ Vector(corner) for corner in obj.bound_box]
     
-    mesh = bpy.data.meshes.new(name=obj.name + "_bb")
-    bbox_obj = bpy.data.objects.new(name=obj.name + "_bb", object_data=mesh)
+    mesh = bpy.data.meshes.new(name=obj.name + "_bbox_temp")
+    bbox_obj = bpy.data.objects.new(name=obj.name + "_bbox_temp", object_data=mesh)
     
     collection = obj.users_collection[0] if obj.users_collection else bpy.context.collection
     collection.objects.link(bbox_obj)
@@ -105,8 +105,8 @@ def create_bbox_and_cameras(obj: bpy.types.Object)-> list[bpy.types.Object, list
         face_center = sum((world_corners[v] for v in face.vertices), Vector()) / len(face.vertices)
         
         face_normal = face.normal.normalized()
-        camera_data = bpy.data.cameras.new(name=f"detection_camera_{obj.name}_{face_idx}")
-        camera_obj = bpy.data.objects.new(name=f"detection_camera_{obj.name}_{face_idx}", object_data=camera_data)
+        camera_data = bpy.data.cameras.new(name=f"detection_camera_{face_idx}")
+        camera_obj = bpy.data.objects.new(name=f"detection_camera_{face_idx}", object_data=camera_data)
         collection.objects.link(camera_obj)
         
         # Position camera at the center of the face and back it up along the normal
@@ -172,7 +172,7 @@ def render_from_cameras_to_memory(scene_name: str, camera_names: list) -> dict:
         bpy.ops.render.render()
 
         # Get the rendered image (Render Result)
-        tmp_file = tmp_dir / f"tmp_{camera_name}.png"
+        tmp_file = tmp_dir / f"{camera_name}.png"
         bpy.data.images["Render Result"].save_render(filepath=str(tmp_file), scene=scene)
 
         # Load the image using OpenCV
@@ -213,7 +213,7 @@ def generate_noun_labels(word_list, max_labels=10000):
     noun_labels = set()
 
     for word in word_list:
-        synsets = wordnet.synsets(word, pos=wordnet.NOUN)
+        synsets = nltk.corpus.wordnet.synsets(word, pos=nltk.corpus.wordnet.NOUN)
 
         for syn in synsets:
             noun_labels.update(lemma.name() for lemma in syn.lemmas())
@@ -321,9 +321,23 @@ def get_best_label(final_labels) ->str:
         print("No labels detected.")
         return None
 
+def set_seed(seed,device = None, cuda_deterministic=True):
+    import random
+
+    random.seed(seed)
+    np.random.seed(seed)
+    torch.manual_seed(seed)
+    if device == "cuda":
+        torch.cuda.manual_seed(seed)
+        torch.cuda.manual_seed_all(seed)
+        if cuda_deterministic:
+            torch.backends.cudnn.deterministic = True
+            torch.backends.cudnn.benchmark = False
+
+
 def generate_label_from_images(model_accuracy : str = 's',max_labels:int=10000) -> str:
     device = "cuda" if torch.cuda.is_available() else "cpu"
-
+    set_seed(seed=13,device=device)
     model_name = AI_MODEL[model_accuracy][0]
     pretrained_weights = AI_MODEL[model_accuracy][1]
 
@@ -352,3 +366,31 @@ def generate_label_from_images(model_accuracy : str = 's',max_labels:int=10000) 
 
     # Find and return max label
     return get_best_label(final_labels)
+
+
+def is_noun(word) -> bool:
+    tokens = nltk.word_tokenize(word)
+    tagged = nltk.pos_tag(tokens)
+    # 'NN', 'NNS', 'NNP', and 'NNPS' are noun tags
+    return tagged[0][1] in ('NN', 'NNS', 'NNP', 'NNPS')
+
+
+
+def classify_objects(classifier, globally_visible_object_names) -> None:
+    for name in globally_visible_object_names:
+        obj = bpy.data.objects.get(name)
+        if obj.type == 'MESH' or obj.type == 'CURVE':
+            hide_all_except_one_globally(globally_visible_object_names,obj.name)
+        
+            bbox_and_cameras = create_bbox_and_cameras(obj)
+        
+            rendered_images = render_from_cameras_to_memory(scene_name = bpy.data.scenes[0].name,camera_names = bbox_and_cameras[1])
+        
+            classifier.classify_images(rendered_images.values())
+        
+            label = classifier.get_best_label()
+        
+            obj['semantic_name'] = label
+
+            print(f"The object {obj} is classified as: {label}")
+            delete_camera_and_bouding_box()

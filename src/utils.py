@@ -1,5 +1,7 @@
+import json
 import bpy
-from src.constants import BB_MIN, BB_MAX, CENTER
+from src.constants import BB_MIN, BB_MAX, CENTER,SEMANTIC_NAME
+
 
 from src.logger_config import setup_logger
 
@@ -174,3 +176,20 @@ def unhide_globally_objects(visible_object_names :list[str])->None:
         if obj:
             obj.hide_render = False # Unhide the object
             obj.hide_viewport = False
+
+def save_dict_to_json(file_path:str,dictionary:dict)->None: 
+    with open(str(file_path), 'w') as json_file:
+        json.dump(file_path, json_file, indent=4)
+
+
+def get_objects_name_to_object_attribute(globally_visible_object_names:list,attribute_name:str)->dict:
+    object_name_to_semantic_name_dict = {}
+    for obj_name in globally_visible_object_names:
+        obj = bpy.data.objects.get(obj_name)
+        if obj:
+            if obj.get(attribute_name):
+                object_name_to_semantic_name_dict[obj_name] = obj[attribute_name]
+
+    print(object_name_to_semantic_name_dict)
+    return object_name_to_semantic_name_dict
+
