@@ -1,6 +1,7 @@
 import json
 import bpy
 from src.constants import BB_MIN, BB_MAX, CENTER,SEMANTIC_NAME
+import re
 
 
 from src.logger_config import setup_logger
@@ -179,7 +180,7 @@ def unhide_globally_objects(visible_object_names :list[str])->None:
 
 def save_dict_to_json(file_path:str,dictionary:dict)->None: 
     with open(str(file_path), 'w') as json_file:
-        json.dump(file_path, json_file, indent=4)
+        json.dump(dictionary, json_file, indent=4)
 
 
 def get_objects_name_to_object_attribute(globally_visible_object_names:list,attribute_name:str)->dict:
@@ -193,3 +194,14 @@ def get_objects_name_to_object_attribute(globally_visible_object_names:list,attr
     print(object_name_to_semantic_name_dict)
     return object_name_to_semantic_name_dict
 
+
+def get_string_without_trailing_digits(string:str)->str:
+    # Use regex to find the first occurrence of a digit
+    match = re.search(r'\d', string)
+    
+    # If a digit is found, return the string up to that point
+    if match:
+        return string[:match.start()]
+    
+    # If no digits are found, return the full string
+    return string

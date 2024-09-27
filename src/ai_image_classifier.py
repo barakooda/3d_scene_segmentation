@@ -136,8 +136,9 @@ class AIImageClassifier:
         return image_tensor
     
     def encode_image(self, image_tensor):
-        with torch.no_grad(), torch.cuda.amp.autocast():
+        with torch.no_grad(), torch.amp.autocast("cuda"):
             return self.model.encode_image(image_tensor)
+
     
     def process_image(self, image_array):
 

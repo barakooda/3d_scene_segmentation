@@ -1,7 +1,10 @@
 bpy
-torch
+torch==2.0.1+cu121  # Install PyTorch with CUDA 12.1 support
+torchvision==0.15.2+cu121  # Install torchvision with CUDA 12.1 support
+torchaudio==2.0.2+cu121  # Install torchaudio with CUDA 12.1 support
 numpy
 opencv-python
 Pillow
 nltk
 open_clip_torch
+--index-url https://download.pytorch.org/whl/cu121  # Ensures packages are installed with CUDA 12.1 support

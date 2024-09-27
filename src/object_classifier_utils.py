@@ -1,7 +1,7 @@
 import bpy
 import cv2
 import math
-from mathutils import Vector
+from mathutils import Vector, Matrix
 import numpy as np
 import os
 import time
@@ -13,6 +13,9 @@ import open_clip
 from ai_models.data.seed_words import seed_words
 from src.constants import AI_MODEL,BASE_PATH
 from src.utils import hide_all_except_one_globally
+from src.utils import get_string_without_trailing_digits
+from src.constants import SEMANTIC_NAME
+import sys
 
 
 def delete_camera_and_bouding_box()-> None:
@@ -34,12 +37,12 @@ def create_new_world_material_with_sky(scene: bpy.types.Scene)-> bpy.types.World
     nodes.clear()
 
     # Create a new Sky Texture node
-    sky_node = nodes.new(type="ShaderNodeTexSky")
-    sky_node.location = (-300, 0)  # Position the node for better visibility
+    #sky_node = nodes.new(type="ShaderNodeTexSky")
+    #sky_node.location = (-300, 0)  # Position the node for better visibility
 
     # Create a new Background node
     background_node = nodes.new(type="ShaderNodeBackground")
-    background_node.inputs['Strength'].default_value = 1.0
+    background_node.inputs['Strength'].default_value = 0.5  # Set the strength to 0.5
     background_node.location = (0, 0)  # Position the node
 
     # Create a new World Output node
@@ -47,7 +50,7 @@ def create_new_world_material_with_sky(scene: bpy.types.Scene)-> bpy.types.World
     world_output_node.location = (300, 0)  # Position the node
 
     # Connect the Sky Texture node to the Background node
-    node_tree.links.new(sky_node.outputs['Color'], background_node.inputs['Color'])
+    #node_tree.links.new(sky_node.outputs['Color'], background_node.inputs['Color'])
 
     # Connect the Background node to the World Output node
     node_tree.links.new(background_node.outputs['Background'], world_output_node.inputs['Surface'])
@@ -96,7 +99,10 @@ def create_bbox_and_cameras(obj: bpy.types.Object)-> list[bpy.types.Object, list
     ]
     
     mesh.from_pydata(world_corners, [], faces)
+    
     mesh.update()
+    
+    
     
 
     # Create cameras facing each face
@@ -105,9 +111,54 @@ def create_bbox_and_cameras(obj: bpy.types.Object)-> list[bpy.types.Object, list
         face_center = sum((world_corners[v] for v in face.vertices), Vector()) / len(face.vertices)
         
         face_normal = face.normal.normalized()
+            
+
+        # Calculate tangent by using the first two vertices of the face
+        if face_idx == 0:
+            vert_0_world = world_corners[face.vertices[2]]
+            vert_1_world = world_corners[face.vertices[1]]
+        
+        if face_idx == 1:
+            vert_0_world = world_corners[face.vertices[2]]
+            vert_1_world = world_corners[face.vertices[1]]
+        
+        if face_idx == 2:
+            vert_0_world = world_corners[face.vertices[0]]
+            vert_1_world = world_corners[face.vertices[1]]
+        
+        if face_idx == 3:
+            vert_0_world = world_corners[face.vertices[1]]
+            vert_1_world = world_corners[face.vertices[0]]
+        
+        if face_idx == 4:
+            vert_0_world = world_corners[face.vertices[1]]
+            vert_1_world = world_corners[face.vertices[0]]
+        
+        if face_idx == 5:
+            vert_0_world = world_corners[face.vertices[1]]
+            vert_1_world = world_corners[face.vertices[0]]
+        
+            
+        tangent = (vert_1_world - vert_0_world).normalized()
+        
+        # Calculate bitangent (cross product of normal and tangent)
+        bitangent = face_normal.cross(tangent).normalized()
+        
+        
+        rotation_matrix = Matrix((
+        tangent,    # X-axis (right direction, tangent)
+        bitangent,  # Y-axis (up direction, bitangent)
+        face_normal # Z-axis (forward direction, normal)
+        )).transposed()  # Transpose to convert from row to column matrix
+
+        
+        
         camera_data = bpy.data.cameras.new(name=f"detection_camera_{face_idx}")
         camera_obj = bpy.data.objects.new(name=f"detection_camera_{face_idx}", object_data=camera_data)
         collection.objects.link(camera_obj)
+        
+        
+        camera_obj.matrix_world = rotation_matrix.to_4x4()
         
         # Position camera at the center of the face and back it up along the normal
         max_dimension = max(bbox_obj.dimensions)
@@ -117,16 +168,20 @@ def create_bbox_and_cameras(obj: bpy.types.Object)-> list[bpy.types.Object, list
         camera_obj.location = face_center +  face_normal * distance # Move camera back along the normal
         
         # Setup camera rotation
-        rot_quat = face_normal.to_track_quat('Z', 'Y')
-        camera_obj.rotation_euler = rot_quat.to_euler()
+        #rot_quat = face_normal.to_track_quat('Z', 'Y')
+        
+        #camera_obj.rotation_euler = rot_quat.to_euler()
+
         
         cameras.append(camera_obj.name)
         
         #bbox_obj.hide_viewport = True
         bbox_obj.hide_render = True
         
+        
 
     return [bbox_obj, cameras]
+
 
 
 def render_from_cameras_to_memory(scene_name: str, camera_names: list) -> dict:
@@ -152,6 +207,7 @@ def render_from_cameras_to_memory(scene_name: str, camera_names: list) -> dict:
     scene.render.image_settings.color_mode = 'RGB'
     scene.render.image_settings.color_depth = '8'
     scene.render.image_settings.compression = 100
+    scene.eevee.use_raytracing = True
     
 
     rendered_images = {}
@@ -377,9 +433,25 @@ def is_noun(word) -> bool:
 
 
 def classify_objects(classifier, globally_visible_object_names) -> None:
+    
+    base_objects_names_set = {}
+
     for name in globally_visible_object_names:
+        
+        
+        base_name = get_string_without_trailing_digits(name)
+
         obj = bpy.data.objects.get(name)
+
         if obj.type == 'MESH' or obj.type == 'CURVE':
+            
+            #this to check if the object is already classified (trying to avoid reclassification for duplicated objects)
+            if base_name in base_objects_names_set:
+                obj[SEMANTIC_NAME] = base_objects_names_set.get(base_name)
+                
+                print(f"The object {obj} is classified as: {label}")
+                continue
+
             hide_all_except_one_globally(globally_visible_object_names,obj.name)
         
             bbox_and_cameras = create_bbox_and_cameras(obj)
@@ -390,7 +462,8 @@ def classify_objects(classifier, globally_visible_object_names) -> None:
         
             label = classifier.get_best_label()
         
-            obj['semantic_name'] = label
+            obj[SEMANTIC_NAME] = label
+            base_objects_names_set[base_name] = label
 
             print(f"The object {obj} is classified as: {label}")
             delete_camera_and_bouding_box()

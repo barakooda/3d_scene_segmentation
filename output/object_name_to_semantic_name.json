@@ -1,1 +1,18 @@
-"D:\\temp\\scene_segmentation\\output\\object_name_to_semantic_name.json"
+{
+    "object1": "chair",
+    "objecta": "screen_background",
+    "objectb": "plane",
+    "objectc": "plumbing_fixture",
+    "objectd": "bed",
+    "objectdd": "screen_background",
+    "objecte": "city",
+    "objectg": "back_pack",
+    "objecth": "undefined",
+    "objecti": "screen_background",
+    "objectk": "conference_table",
+    "objectl": "Tree",
+    "objectm": "table_lamp",
+    "objectn": "ambulance",
+    "objecto": "undefined",
+    "objectz": "water_heater"
+}
