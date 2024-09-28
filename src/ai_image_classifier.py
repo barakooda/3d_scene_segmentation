@@ -1,7 +1,5 @@
 import time, random
-from collections import Counter
 import numpy as np
-import cv2
 from nltk.corpus import wordnet
 import torch
 import torchvision.transforms.functional as TF
@@ -108,12 +106,11 @@ class AIImageClassifier:
         """
         Preprocesses an image array using torchvision's functional API without PIL.
         """
-        # Convert BGR (OpenCV) to RGB
-        image_rgb = cv2.cvtColor(image_array, cv2.COLOR_BGR2RGB)
-        
+        image_rgb = image_array
+
         # Convert to float32 and scale pixel values to [0, 1]
         image_rgb = image_rgb.astype(np.float32) / 255.0
-        
+
         # Convert to tensor (C, H, W)
         image_tensor = torch.from_numpy(image_rgb).permute(2, 0, 1)
         

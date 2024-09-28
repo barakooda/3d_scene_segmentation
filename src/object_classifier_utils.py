@@ -113,7 +113,7 @@ def create_bbox_and_cameras(obj: bpy.types.Object)-> list[bpy.types.Object, list
         face_normal = face.normal.normalized()
             
 
-        # Calculate tangent by using the first two vertices of the face
+        # Calculate tangent
         if face_idx == 0:
             vert_0_world = world_corners[face.vertices[2]]
             vert_1_world = world_corners[face.vertices[1]]
@@ -207,7 +207,11 @@ def render_from_cameras_to_memory(scene_name: str, camera_names: list) -> dict:
     scene.render.image_settings.color_mode = 'RGB'
     scene.render.image_settings.color_depth = '8'
     scene.render.image_settings.compression = 100
-    scene.eevee.use_raytracing = True
+    scene.cycles.device = 'GPU'
+    scene.cycles.samples = 2048
+    scene.cycles.use_denoising = False
+    scene.render.use_persistent_data = True
+
     
 
     rendered_images = {}
@@ -467,3 +471,4 @@ def classify_objects(classifier, globally_visible_object_names) -> None:
 
             print(f"The object {obj} is classified as: {label}")
             delete_camera_and_bouding_box()
+            
