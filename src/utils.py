@@ -2,7 +2,10 @@ import json
 import bpy
 from src.constants import BB_MIN, BB_MAX, CENTER,SEMANTIC_NAME
 import re
-
+import numpy as np
+import cv2
+from pathlib import Path
+import uuid
 
 from src.logger_config import setup_logger
 
@@ -205,3 +208,106 @@ def get_string_without_trailing_digits(string:str)->str:
     
     # If no digits are found, return the full string
     return string
+
+# render viewport image function
+def render_viewport_image(file_path:str,scene_name:str = "Scene",view_layer_name:str = "ViewLayer",camera_name:str = "Camera")->None:
+    
+    scene = bpy.data.scenes.get(scene_name)
+    
+
+    # Set the camera object by name
+    camera = bpy.data.objects.get(camera_name)
+
+
+
+    # Check if the camera exists in the scene
+    if camera:
+        # Set the camera as the active camera for the scene
+        bpy.data.scenes['Scene'].camera = camera
+    else:
+        print("Camera not found")
+
+    # Render the viewport using the active camera
+    bpy.data.scenes['Scene'].render.filepath = file_path
+    
+    for window in bpy.context.window_manager.windows:
+        for area in window.screen.areas:
+            if area.type == 'VIEW_3D':  # Ensure it’s the 3D Viewport
+                with bpy.context.temp_override(window=window, area=area):
+                    bpy.ops.render.opengl(write_still=True, view_context=True)
+                break
+    
+    
+def create_stitched_image(rendered_images, camera_names, base_path, output_size=(1280, 720), image_size=(224, 224)):
+    """
+    Creates a 2x3 stitched RGBA image from 6 rendered images and places it on the top-right corner of an empty image.
+    
+    Args:
+    - rendered_images: List or dictionary of 6 images to be stitched together.
+    - camera_names: List of camera names corresponding to the images.
+    - base_path: The base folder where the output image will be saved.
+    - output_size: The size of the final output image (default is 1280x720).
+    - image_size: The size to which each image will be resized (default is 224x224).
+    
+    Returns:
+    - None. Saves the final image in the output folder with the name of the first camera.
+    """
+    
+    # Create a blank RGBA image initialized to transparent (all zeros, including alpha)
+    empty_image = np.zeros((*output_size[::-1], 4), dtype=np.uint8)  # (height, width, 4 channels)
+
+    if len(rendered_images) == 6:
+        # Resize all images to the given size and add an alpha channel
+        resized_images = []
+        for i in range(6):
+            # Resize the image
+            img = cv2.resize(rendered_images[camera_names[i]], image_size)
+            
+            # Convert the image to RGBA (add an alpha channel)
+            if img.shape[2] == 3:  # If the image is RGB, add alpha
+                img_rgba = cv2.cvtColor(img, cv2.COLOR_RGB2RGBA)
+            else:
+                img_rgba = img
+            
+            # Set the alpha channel to 255 (fully opaque)
+            img_rgba[:, :, 3] = 255
+            resized_images.append(img_rgba)
+
+        # Stitch images in a 2x3 grid
+        row1 = cv2.hconcat(resized_images[:2])  # First 2 images (top row)
+        row2 = cv2.hconcat(resized_images[2:4])  # Next 2 images (middle row)
+        row3 = cv2.hconcat(resized_images[4:])   # Last 2 images (bottom row)
+
+        # Combine the 3 rows to make a 2x3 grid
+        stitched_images = cv2.vconcat([row1, row2, row3])
+
+        # Define the top-left corner position for placing the stitched images on the empty image
+        x_offset = output_size[0] - stitched_images.shape[1]  # Align it to the right
+        y_offset = 0  # Start at the top (y=0)
+
+        # Place the stitched images on the top-right corner of the empty RGBA image
+        empty_image[y_offset:y_offset+stitched_images.shape[0], x_offset:x_offset+stitched_images.shape[1]] = stitched_images
+
+        #convert to bgr
+        empty_image = cv2.cvtColor(empty_image, cv2.COLOR_RGBA2BGRA)
+
+        # Save the final RGBA image to PNG file using the name from camera_names[0]
+
+        file_path = Path(base_path) / "output" / f"{camera_names[0]}.png"
+        file_path = get_unique_file_path(file_path)
+        #do not overwrite existing files change name instead
+        cv2.imwrite(str(file_path), empty_image)
+
+
+def get_unique_file_path(file_path):
+    """
+    Generates a unique file path by appending a random UUID string to the file name.
+    
+    Args:
+    - file_path: The initial path of the file.
+    
+    Returns:
+    - A unique file path with a random UUID appended before the file extension.
+    """
+    unique_file_path = file_path.with_name(f"{file_path.stem}_{uuid.uuid4().hex}{file_path.suffix}")
+    return unique_file_path

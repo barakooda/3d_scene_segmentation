@@ -12,8 +12,7 @@ import torch
 import open_clip
 from ai_models.data.seed_words import seed_words
 from src.constants import AI_MODEL,BASE_PATH
-from src.utils import hide_all_except_one_globally
-from src.utils import get_string_without_trailing_digits
+from src.utils import hide_all_except_one_globally,render_viewport_image,get_string_without_trailing_digits
 from src.constants import SEMANTIC_NAME
 import sys
 
@@ -87,6 +86,12 @@ def create_bbox_and_cameras(obj: bpy.types.Object)-> list[bpy.types.Object, list
     
     collection = obj.users_collection[0] if obj.users_collection else bpy.context.collection
     collection.objects.link(bbox_obj)
+
+    #give green color to the bounding box
+    material = bpy.data.materials.new(name="bbox_material")
+    material.diffuse_color = (0, 1, 0, 1)  # Green color
+    bbox_obj.data.materials.append(material)
+
     
     # Define vertices and faces ensuring the normals will be calculated outward
     faces = [
@@ -442,7 +447,7 @@ def classify_objects(classifier, globally_visible_object_names) -> None:
 
     for name in globally_visible_object_names:
         
-        
+
         base_name = get_string_without_trailing_digits(name)
 
         obj = bpy.data.objects.get(name)
@@ -470,5 +475,18 @@ def classify_objects(classifier, globally_visible_object_names) -> None:
             base_objects_names_set[base_name] = label
 
             print(f"The object {obj} is classified as: {label}")
+            
             delete_camera_and_bouding_box()
+
+# Function to extract nouns from text
+def extract_nouns(text):
+    words = nltk.word_tokenize(text)
+    tagged_words = nltk.pos_tag(words)
+    nouns = [word for word, pos in tagged_words if pos.startswith('NN') and word.lower() not in nltk.corpus.stopwords.words('english')]
+    return nouns
+
+# Function to prioritize seed words
+def prioritize_seed_words(nouns, seed_words):
+    filtered_nouns = [noun for noun in nouns if noun.lower() in seed_words]
+    return filtered_nouns if filtered_nouns else nouns
             

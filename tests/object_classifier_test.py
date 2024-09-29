@@ -20,7 +20,7 @@ if not IN_FILE_PATH.exists():
     print(f"Error: The file at {IN_FILE_PATH} does not exist.")
     exit(1)
 
-classifier = AIImageClassifier(model_accuracy='s', max_labels=10000, seed=13)
+classifier = AIImageClassifier(model_accuracy='s', max_labels=15000, seed=3)
 
 bpy.ops.wm.open_mainfile(filepath=str(IN_FILE_PATH))
 

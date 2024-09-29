@@ -54,7 +54,7 @@ class AIImageClassifier:
         # Load model
         start_time = time.time()
         self.model, _, _ = open_clip.create_model_and_transforms(model_name, pretrained=pretrained_weights)
-        self.model = self.model.to(self.device).half().eval()
+        self.model = self.model.to(self.device).eval()
         print(f"Model {model_name} loaded in {time.time() - start_time:.2f} seconds")
     
     def _generate_labels(self):
@@ -115,7 +115,7 @@ class AIImageClassifier:
         image_tensor = torch.from_numpy(image_rgb).permute(2, 0, 1)
         
         # Resize to 224x224
-        image_tensor = TF.resize(image_tensor, [224, 224])
+        image_tensor = torch.nn.functional.interpolate(image_tensor.unsqueeze(0), size=(224, 224), mode='bilinear', align_corners=False).squeeze(0)
         
         # Normalize using mean and std
         image_tensor = TF.normalize(image_tensor,
@@ -127,7 +127,7 @@ class AIImageClassifier:
         
         # Convert to half precision if model is in half precision
     
-        image_tensor = image_tensor.half()
+        #image_tensor = image_tensor.half()
     
         
         return image_tensor
@@ -143,10 +143,13 @@ class AIImageClassifier:
             image_tensor = self.preprocess_image(image_array)
             start_time = time.time()
             image_features = self.encode_image(image_tensor)
-            #print(f"Image encoded in {time.time() - start_time:.2f} seconds")
+            print(f"Image encoded in {time.time() - start_time:.2f} seconds")
             best_label, best_prob = self.process_in_batches(image_features)
             best_label = best_label.split('.')[0]
-            #print(f"Predicted label: {best_label} with probability {best_prob:.4f}")
+            print(f"Predicted label: {best_label} with probability {best_prob:.4f}")
+
+            if best_prob < 0.9:
+                return None
             return best_label
         except Exception as e:
             print(f"Error processing image: {e}")
@@ -182,6 +185,9 @@ class AIImageClassifier:
         
         for image_array in image_arrays:
             best_label = self.process_image(image_array)
+            
+            if best_label in ["clip"]:
+                continue
             self.raw_final_labels.append(best_label)
             self.update_final_labels(best_label)
         
