@@ -55,11 +55,11 @@ For scenarios that demand precise control over gradients or object edges, Crypto
 - **High Color Depth**: Supports 8-bit to 32-bit per channel color depth for segmentation space control.
 - **Automated Material Application**: Automatically applies materials and shaders to segmented parts.
 - **Material Usage Optimiztion**: The number of materials needed for segmentation is minimal and usually ends up with only two.
+- **Automatic Object Detection and Classification**: Integration of AI-based detectors to automatically identify and classify objects in 3D scenes.
 
 ## Future Features
 Planned enhancements to extend functionality and improve user experience include:
 - **Instance Segmentation**: Implementation of instance segmentation to distinguish individual instances of the same object type within a scene.
-- **Automatic Object Detection and Classification**: Integration of AI-based detectors to automatically identify and classify objects in 3D scenes.
 - **Support for AOV in Rendering**: Adding Arbitrary Output Variable (AOV) support to enhance rendering capabilities, allowing output multi segmentation types in a single render.
 - **Automation for Cryptomatte**: Developing automated processes for Cryptomatte in Blender for cases where the current system is limited, enhancing the ability to handle complex masking and object isolation.
 - **Refraction Support in Segmentation**: Adding support for realistic refraction in transparent materials such as glass.
